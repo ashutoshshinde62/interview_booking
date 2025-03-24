@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? 'https://your-app-name.onrender.com' : 'http://localhost:3000',
+  origin: process.env.NODE_ENV === 'production' ? 'https://interview-booking.onrender.com' : 'http://localhost:3000',
   credentials: true
 }));
 app.use(express.json());
@@ -170,7 +170,7 @@ app.post('/login', async (req, res) => {
     // Set token in HTTP-only cookie
     res.cookie('token', token, { 
       httpOnly: true,
-      secure: false, // Set to true if using HTTPS
+      secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS
       sameSite: 'lax',
     });
 
@@ -351,7 +351,7 @@ app.get('/get-booked-slots', isAuthenticated, (req, res) => {
 });
 
 // Delete slot endpoint
-app.delete('/delete-slot/:id', async (req, res) => {
+app.delete('/delete-slot/:id', isAuthenticated, async (req, res) => {
   const slotId = req.params.id;
   
   try {
@@ -383,7 +383,7 @@ app.get('/get-users', isAdmin, (req, res) => {
 });
 
 // Delete user endpoint
-app.delete('/delete-user/:id', (req, res) => {
+app.delete('/delete-user/:id', isAdmin, (req, res) => {
   const userId = req.params.id;
   
   db.query(
@@ -517,7 +517,7 @@ app.get('/auth-check', (req, res) => {
 // Logout route
 app.get('/logout', (req, res) => {
   res.clearCookie('token');
-  res.redirect('http://localhost:3000');
+  res.redirect('https://interview-booking.onrender.com' || 'http://localhost:3000');
 });
 
 
