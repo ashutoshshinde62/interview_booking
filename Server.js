@@ -62,7 +62,7 @@ const isAdmin = (req, res, next) => {
   const token = req.cookies.token;
   
   if (!token) {
-    return res.redirect('/admin-login.html');
+    return res.status(401).json({ error: "Unauthorized" }); // For APIs
   }
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
