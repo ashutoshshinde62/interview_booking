@@ -19,8 +19,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? 'https://interview-booking.onrender.com' : 'http://localhost:3000',
-  credentials: true
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000'
 }));
 app.use(express.json());
 // MySQL Connection
@@ -46,7 +45,7 @@ const isAuthenticated = (req, res, next) => {
   const token = req.cookies.token;
   
   if (!token) {
-    return res.redirect('/login.html');
+    return res.status(401).json({ error: "Unauthorized" }); // For APIs
   }
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
@@ -116,13 +115,6 @@ app.post('/register' ,fetchAdditionalData, async (req, res) => {
     if (existingUser.length > 0) {
         return res.status(400).json({ message: 'Username or email or Mobile Number already exists' });
       }
-
-    const [ashu] = await db.promise().query(
-        'SELECT * FROM users WHERE phone = ?',
-        [phone]
-      );
-
-    console.log(ashu);
 
     if (additionalData.length === 0) {
         return res.status(400).json({ message: 'Mobile number not authorized for registration' });
@@ -212,7 +204,7 @@ app.post('/admin-login', async (req, res) => {
     // Set token in HTTP-only cookie
     res.cookie('token', token, { 
       httpOnly: true,
-      secure: false, // Set to true if using HTTPS
+      secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS
       sameSite: 'lax',
     });
 
@@ -517,15 +509,9 @@ app.get('/auth-check', (req, res) => {
 // Logout route
 app.get('/logout', (req, res) => {
   res.clearCookie('token');
-  res.redirect('https://interview-booking.onrender.com' || 'http://localhost:3000');
+  res.redirect(process.env.FRONTEND_URL || 'http://localhost:3000');
 });
 
-
-
-// Protected dashboard route
-app.get('/dashboard.html', isAuthenticated, (req, res) => {
-  res.redirect('/');
-});
 
 // Start the server
 app.listen(PORT, () => {
