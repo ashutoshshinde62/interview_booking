@@ -219,45 +219,17 @@ app.post('/admin-login', async (req, res) => {
 app.post('/register-user', isAdmin, async (req, res) => {
   const { fullName, phone, email, role } = req.body;
 
-  // Validation
-  if (!fullName || !phone || !email || !role) {
-    return res.status(400).json({
-      success: false,
-      message: 'All fields are required'
-    });
-  }
-
   try {
-    // Check for existing mobile number
-    const [existing] = await db.promise().query(
-      'SELECT * FROM users_admin WHERE mobile_number = ?',
-      [phone]
-    );
-
-    if (existing.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Mobile number already registered'
-      });
-    }
-
-    // Insert new user
+    // Insert the new user into the database
     await db.promise().query(
       'INSERT INTO users_admin (full_name, mobile_number, email, role) VALUES (?, ?, ?, ?)',
       [fullName, phone, email, role]
     );
 
-    res.json({
-      success: true,
-      message: 'User registered successfully'
-    });
-
+    res.json({ message: 'User registered successfully' });
   } catch (err) {
-    console.error('Registration error:', err);
-    res.status(500).json({
-      success: false,
-      message: 'Database error. Please try again.'
-    });
+    console.error('Error registering user:', err);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
