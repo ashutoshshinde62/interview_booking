@@ -390,6 +390,10 @@ fetchUsers();
 async function fetchAdminUsers() {
   try {
     const response = await fetch('/get-admin-users');
+    credentials: 'include'
+    if (!response.ok) {
+      throw new Error('Failed to fetch admin users');
+    }
     const data = await response.json();
     const tableBody = document.querySelector('#adminUsersTable tbody');
     tableBody.innerHTML = '';
@@ -412,7 +416,8 @@ async function fetchAdminUsers() {
       tableBody.appendChild(row);
     });
   } catch (err) {
-    console.error('Error fetching admin users:', err);
+    console.error('Fetch error:', err);
+    // Handle error (e.g., redirect to login)
   }
 }
 
