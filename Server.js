@@ -20,7 +20,9 @@ app.use(express.static('public'));
 app.use(cookieParser());
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 // MySQL Connection
@@ -50,6 +52,7 @@ const isAuthenticated = (req, res, next) => {
   }
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    console.log('Decoded token:', decoded);
     if (err || !decoded.user) {
       res.clearCookie('token');
       return res.redirect('/login.html');
@@ -60,6 +63,7 @@ const isAuthenticated = (req, res, next) => {
 };
 
 const isAdmin = (req, res, next) => {
+  console.log('Admin middleware - token:', token);
   const token = req.cookies.token;
   
   if (!token) {
@@ -70,6 +74,7 @@ const isAdmin = (req, res, next) => {
   }
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    console.log('Admin middleware - decoded:', decoded);
     if (err || !decoded.admin) {
       res.clearCookie('token');
       return res.status(403).json({ 
@@ -106,6 +111,14 @@ const fetchAdditionalData = async (req, res, next) => {
   }
 };
 
+app.get('/health', async (req, res) => {
+  try {
+    await db.promise().query('SELECT 1');
+    res.json({ status: 'healthy', database: 'connected' });
+  } catch (err) {
+    res.status(500).json({ status: 'unhealthy', database: 'disconnected' });
+  }
+});
 
 app.post('/register' ,fetchAdditionalData, async (req, res) => {
   console.log('Request Body:', req.body);
@@ -226,7 +239,7 @@ app.post('/admin-login', async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      sameSite: 'strict',
       maxAge: 3600000 // 1 hour
     });
 
@@ -457,15 +470,16 @@ app.delete('/delete-user/:id', isAdmin, (req, res) => {
 });
 
 // Get admin-registered users
-app.get('/get-admin-users', isAdmin, (req, res) => {
-  const query = 'SELECT id, full_name, mobile_number, email, role FROM users_admin';
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error('Error fetching admin users:', err);
-      return res.status(500).json({ message: 'Error fetching users' });
-    }
+app.get('/get-admin-users', isAdmin, async (req, res) => {
+  try {
+    const [results] = await db.promise().query(
+      'SELECT id, full_name, mobile_number, email, role FROM users_admin'
+    );
     res.json(results);
-  });
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ message: 'Database error', error: err.message });
+  }
 });
 
 // Delete admin user endpoint
