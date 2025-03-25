@@ -185,40 +185,63 @@ app.post('/admin-login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Fetch the admin from the database
+    // 1. Find Admin
     const [admin] = await db.promise().query(
-      'SELECT * FROM admins WHERE username = ?',
+      'SELECT * FROM admins WHERE username = ?', 
       [username]
     );
 
-    // Check if the admin exists
+    // 2. Admin Not Found
     if (admin.length === 0) {
-      return res.status(400).json({ message: 'Admin not found' });
+      console.log('Admin not found:', username);
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid credentials' 
+      });
     }
 
-    // Compare the provided password with the hashed password in the database
+    // 3. Verify Password
     const isMatch = await bcrypt.compare(password, admin[0].password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      console.log('Password mismatch for admin:', username);
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid credentials' 
+      });
     }
 
-    // Generate JWT token with admin ID
+    // 4. Generate JWT Token
     const token = jwt.sign(
-      { admin: { id: admin[0].id, role: 'admin' } }, // Add role
-      JWT_SECRET,
+      { 
+        admin: { 
+          id: admin[0].id, 
+          role: 'admin' 
+        } 
+      }, 
+      process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
-    // Set token in HTTP-only cookie
-    res.cookie('token', token, { 
+
+    // 5. Set Secure Cookie
+    res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS
+      secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      maxAge: 3600000 // 1 hour
     });
 
-    res.json({ redirect: '/admin-dashboard.html' });
+    // 6. Send Success Response
+    res.json({ 
+      success: true,
+      redirect: '/admin-dashboard.html' 
+    });
+
   } catch (err) {
     console.error('Admin login error:', err);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Database connection error' 
+    });
   }
 });
 
