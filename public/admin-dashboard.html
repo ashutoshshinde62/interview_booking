@@ -241,34 +241,41 @@
   <script>
     // Handle Registration Form Submission
     document.getElementById('registrationForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fullName = document.getElementById('fullName').value;
-      const phone = document.getElementById('phone').value;
-      const email = document.getElementById('email').value;
-      const role = document.getElementById('role').value;
-
-      const response = await fetch('/register-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ fullName, phone, email, role }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        document.getElementById('registrationMessage').innerHTML = `
-          <div class="message success">${data.message}</div>
-        `;
-        fetchAdminUsers();
-        fetchUsers();
-        fetchBookedSlots(); // Refresh the table after registration
-      } else {
-        document.getElementById('registrationMessage').innerHTML = `
-          <div class="message error">${data.message}</div>
-        `;
-      }
+  e.preventDefault();
+  
+  try {
+    const response = await fetch('/register-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName: document.getElementById('fullName').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        role: document.getElementById('role').value
+      })
     });
+
+    const data = await response.json();
+    
+    const messageDiv = document.getElementById('registrationMessage');
+    messageDiv.innerHTML = `
+      <div class="message ${data.success ? 'success' : 'error'}">
+        ${data.message}
+      </div>
+    `;
+
+    if (data.success) {
+      document.getElementById('registrationForm').reset();
+      fetchAdminUsers();
+    }
+
+  } catch (err) {
+    console.error('Submission error:', err);
+    document.getElementById('registrationMessage').innerHTML = `
+      <div class="message error">Connection error. Please try again.</div>
+    `;
+  }
+});
 
     // Add this function to admin-dashboard.html's script
 async function deleteSlot(slotId) {
