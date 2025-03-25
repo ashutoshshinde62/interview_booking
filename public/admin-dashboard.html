@@ -240,7 +240,7 @@
 
   <script>
     // Handle Registration Form Submission
-    document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+   document.getElementById('registrationForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   
   try {
@@ -249,9 +249,9 @@
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({
-        fullName: document.getElementById('fullName').value,
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
+        fullName: document.getElementById('fullName').value.trim(),
+        phone: document.getElementById('phone').value.replace(/\D/g, ''), // Remove non-digits
+        email: document.getElementById('email').value.trim().toLowerCase(),
         role: document.getElementById('role').value
       })
     });
@@ -259,21 +259,26 @@
     const data = await response.json();
     
     const messageDiv = document.getElementById('registrationMessage');
-    if (!response.ok) {
-      throw new Error(data.message || 'Registration failed');
-    }
-
     messageDiv.innerHTML = `
-      <div class="message success">${data.message}</div>
+      <div class="message ${data.success ? 'success' : 'error'}">
+        ${data.message}
+      </div>
     `;
-    document.getElementById('registrationForm').reset();
-    fetchAdminUsers();
+
+    if (data.success) {
+      document.getElementById('registrationForm').reset();
+      fetchAdminUsers(); // Refresh the list
+    }
 
   } catch (err) {
     document.getElementById('registrationMessage').innerHTML = `
-      <div class="message error">${err.message}</div>
+      <div class="message error">Network error. Try again.</div>
     `;
   }
+});
+
+    phoneInput.addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/\D/g, ''); // Allow only numbers
 });
 
     // Add this function to admin-dashboard.html's script
