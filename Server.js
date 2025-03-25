@@ -63,13 +63,19 @@ const isAdmin = (req, res, next) => {
   const token = req.cookies.token;
   
   if (!token) {
-    return res.status(401).json({ error: "Unauthorized" }); // For APIs
+    return res.status(401).json({ 
+      success: false,
+      error: "Authorization token missing" 
+    });
   }
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err || !decoded.admin) {
       res.clearCookie('token');
-      return res.redirect('/admin-login.html');
+      return res.status(403).json({ 
+        success: false,
+        error: "Invalid admin credentials" 
+      });
     }
     req.admin = decoded.admin;
     next();
@@ -206,7 +212,7 @@ app.post('/admin-login', async (req, res) => {
     res.cookie('token', token, { 
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
     });
 
     res.json({ redirect: '/admin-dashboard.html' });
