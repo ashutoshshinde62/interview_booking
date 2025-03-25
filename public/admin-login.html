@@ -102,6 +102,11 @@
         alert(data.message || 'Admin login failed');
       }
     });
+    document.addEventListener('DOMContentLoaded', () => {
+  fetchBookedSlots();
+  fetchAdminUsers();
+  fetchUsers();
+});
   </script>
 </body>
 </html>
