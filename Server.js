@@ -248,7 +248,6 @@ app.post('/admin-login', async (req, res) => {
 app.post('/register-user', isAdmin, async (req, res) => {
   const { fullName, phone, email, role } = req.body;
 
-  // Add validation
   if (!fullName || !phone || !email || !role) {
     return res.status(400).json({ 
       success: false, 
@@ -259,37 +258,40 @@ app.post('/register-user', isAdmin, async (req, res) => {
   try {
     // Check for existing mobile number
     const [existing] = await db.promise().query(
-      'SELECT * FROM users_admin WHERE mobile_number = ?',
-      [phone]
+      'SELECT * FROM users_admin WHERE mobile_number = ? OR email = ?',
+      [phone, email]
     );
 
     if (existing.length > 0) {
-      return res.status(400).json({ 
+      const conflictField = existing[0].mobile_number === phone ? 'Mobile number' : 'Email';
+      return res.status(409).json({ 
         success: false,
-        message: 'Mobile number already registered' 
+        message: `${conflictField} already registered` 
       });
     }
 
     // Insert user
-    await db.promise().query(
+    const [result] = await db.promise().query(
       'INSERT INTO users_admin (full_name, mobile_number, email, role) VALUES (?, ?, ?, ?)',
       [fullName, phone, email, role]
     );
 
     res.json({ 
       success: true,
-      message: 'User registered successfully' 
+      message: 'User registered successfully',
+      userId: result.insertId
     });
 
   } catch (err) {
-    console.error('Error:', err);
+    console.error('Database Error:', err);
     res.status(500).json({ 
       success: false,
-      message: 'Database error. Please try again.' 
+      message: process.env.NODE_ENV === 'development' 
+        ? err.message 
+        : 'Database operation failed'
     });
   }
 });
-
 
 app.get('/user',isAuthenticated, async (req, res) => {
   try {
