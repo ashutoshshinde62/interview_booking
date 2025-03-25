@@ -247,6 +247,7 @@
     const response = await fetch('/register-user', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // Crucial for sending cookies
       body: JSON.stringify({
         fullName: document.getElementById('fullName').value,
         phone: document.getElementById('phone').value,
@@ -258,21 +259,19 @@
     const data = await response.json();
     
     const messageDiv = document.getElementById('registrationMessage');
-    messageDiv.innerHTML = `
-      <div class="message ${data.success ? 'success' : 'error'}">
-        ${data.message}
-      </div>
-    `;
-
-    if (data.success) {
-      document.getElementById('registrationForm').reset();
-      fetchAdminUsers();
+    if (!response.ok) {
+      throw new Error(data.message || 'Server error');
     }
 
+    messageDiv.innerHTML = `
+      <div class="message success">${data.message}</div>
+    `;
+    document.getElementById('registrationForm').reset();
+    fetchAdminUsers();
+
   } catch (err) {
-    console.error('Submission error:', err);
     document.getElementById('registrationMessage').innerHTML = `
-      <div class="message error">Connection error. Please try again.</div>
+      <div class="message error">${err.message}</div>
     `;
   }
 });
