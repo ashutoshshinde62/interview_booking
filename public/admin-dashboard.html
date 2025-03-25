@@ -247,7 +247,7 @@
     const response = await fetch('/register-user', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include', // Crucial for sending cookies
+      credentials: 'include',
       body: JSON.stringify({
         fullName: document.getElementById('fullName').value,
         phone: document.getElementById('phone').value,
@@ -260,7 +260,7 @@
     
     const messageDiv = document.getElementById('registrationMessage');
     if (!response.ok) {
-      throw new Error(data.message || 'Server error');
+      throw new Error(data.message || 'Registration failed');
     }
 
     messageDiv.innerHTML = `
