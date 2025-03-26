@@ -337,7 +337,6 @@
     data.forEach((slot) => {
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${slot.id}</td>
         <td>${slot.student_name}</td>
         <td>${slot.formatted_date}</td>
         <td>${slot.time}</td>
@@ -390,7 +389,6 @@ async function deleteSlot(slotId) {
     data.forEach((user) => {
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${user.id}</td>
         <td>${user.username}</td>
         <td>${user.email}</td>
         <td>${user.phone}</td>
@@ -443,7 +441,6 @@ async function fetchAdminUsers() {
     data.forEach((user) => {
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${user.id}</td>
         <td>${user.full_name}</td>
         <td>${user.mobile_number}</td>
         <td>${user.email}</td>
