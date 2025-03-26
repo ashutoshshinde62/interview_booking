@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
+  <div style="text-align: center; margin: 1rem 0;">
+  <button class="refresh-button" onclick="refreshData()">Refresh All Data</button>
+</div>
   <style>
     /* Existing CSS styles */
     body {
@@ -148,6 +151,21 @@
 .admin-delete:hover {
   background: #ff5252;
 }
+    .refresh-button {
+    padding: 0.75rem 2rem;
+    background: #6a11cb;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-size: 1rem;
+    margin: 0.5rem;
+  }
+
+  .refresh-button:hover {
+    background: #2575fc;
+  }
   </style>
 </head>
 <body>
@@ -284,22 +302,48 @@
       });
     }
 
+    // Add this function
+  function refreshData() {
+    fetchAdminUsers();
+    fetchBookedSlots();
+    fetchUsers();
+    showRefreshFeedback();
+  }
+
+    // Add feedback animation
+  function showRefreshFeedback() {
+    const btn = document.querySelector('.refresh-button');
+    btn.style.background = '#4CAF50';
+    setTimeout(() => {
+      btn.style.background = '#6a11cb';
+    }, 500);
+  }
+
     // Fetch and Display Booked Slots
   async function fetchBookedSlots() {
-    const response = await fetch('/get-booked-slots');
-    const data = await response.json();
+    try {
+      const response = await fetch('/get-booked-slots');
+      if (!response.ok) throw new Error('Failed to fetch slots');
+      const data = await response.json();
+      populateSlotsTable(data);
+    } catch (err) {
+      console.error('Fetch slots error:', err);
+      alert('Error fetching booked slots');
+    }
+  }
+    function populateSlotsTable(data) {
     const tableBody = document.querySelector('#bookedSlotsTable tbody');
-    tableBody.innerHTML = ''; // Clear existing rows
-
+    tableBody.innerHTML = '';
     data.forEach((slot) => {
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${slot.student_name}</td> <!-- Match database column name -->
+        <td>${slot.id}</td>
+        <td>${slot.student_name}</td>
         <td>${slot.formatted_date}</td>
         <td>${slot.time}</td>
         <td>
-        <button class="delete-btn" onclick="deleteSlot(${slot.id})">Delete</button>
-      </td>
+          <button class="delete-btn" onclick="deleteSlot(${slot.id})">Delete</button>
+        </td>
       `;
       tableBody.appendChild(row);
     });
@@ -330,24 +374,33 @@ async function deleteSlot(slotId) {
 
 
   async function fetchUsers() {
-  const response = await fetch('/get-users');
-  const data = await response.json();
-  const tableBody = document.querySelector('#registeredUsersTable tbody');
-  tableBody.innerHTML = '';
-
-  data.forEach((user) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${user.username}</td>
-      <td>${user.email}</td>
-      <td>${user.phone}</td>
-      <td>
-        <button class="delete-btn user-delete" onclick="deleteUser(${user.id})">Delete</button>
-      </td>
-    `;
-    tableBody.appendChild(row);
-  });
-}
+    try {
+      const response = await fetch('/get-users');
+      if (!response.ok) throw new Error('Failed to fetch users');
+      const data = await response.json();
+      populateUsersTable(data);
+    } catch (err) {
+      console.error('Fetch users error:', err);
+      alert('Error fetching users');
+    }
+  }
+    function populateUsersTable(data) {
+    const tableBody = document.querySelector('#registeredUsersTable tbody');
+    tableBody.innerHTML = '';
+    data.forEach((user) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${user.id}</td>
+        <td>${user.username}</td>
+        <td>${user.email}</td>
+        <td>${user.phone}</td>
+        <td>
+          <button class="delete-btn user-delete" onclick="deleteUser(${user.id})">Delete</button>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
 
 // Delete User Function
 async function deleteUser(userId) {
@@ -374,37 +427,36 @@ async function deleteUser(userId) {
 
 // Fetch and display admin-registered users
 async function fetchAdminUsers() {
-  try {
-    const response = await fetch('/get-admin-users');
-    credentials: 'include'
-    if (!response.ok) {
-      throw new Error('Failed to fetch admin users');
+    try {
+      const response = await fetch('/get-admin-users');
+      if (!response.ok) throw new Error('Failed to fetch admin users');
+      const data = await response.json();
+      populateAdminUsersTable(data);
+    } catch (err) {
+      console.error('Fetch admin users error:', err);
+      alert('Error fetching admin users');
     }
-    const data = await response.json();
+  }
+    function populateAdminUsersTable(data) {
     const tableBody = document.querySelector('#adminUsersTable tbody');
     tableBody.innerHTML = '';
-
     data.forEach((user) => {
       const row = document.createElement('tr');
       row.innerHTML = `
+        <td>${user.id}</td>
         <td>${user.full_name}</td>
         <td>${user.mobile_number}</td>
         <td>${user.email}</td>
         <td>${user.role}</td>
         <td>
-          <button class="delete-btn admin-delete" 
-                  onclick="deleteAdminUser(${user.id})">
+          <button class="delete-btn admin-delete" onclick="deleteAdminUser(${user.id})">
             Delete
           </button>
         </td>
       `;
       tableBody.appendChild(row);
     });
-  } catch (err) {
-    console.error('Fetch error:', err);
-    // Handle error (e.g., redirect to login)
   }
-}
 
 // Delete admin user function
 async function deleteAdminUser(userId) {
@@ -462,9 +514,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     return originalFetch(input, newInit);
   };
 });
-fetchAdminUsers();
-fetchBookedSlots();
-fetchUsers();
+document.addEventListener('DOMContentLoaded', () => {
+    refreshData();
+  });
   </script>
 </body>
 </html>
