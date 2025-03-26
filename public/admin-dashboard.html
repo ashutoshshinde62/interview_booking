@@ -277,9 +277,6 @@
   }
 });
 
-    phoneInput.addEventListener('input', (e) => {
-  e.target.value = e.target.value.replace(/\D/g, ''); // Allow only numbers
-});
 
     // Add this function to admin-dashboard.html's script
 async function deleteSlot(slotId) {
@@ -468,7 +465,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.href = '/';
   }
 });
-
+fetchAdminUsers();
+fetchBookedSlots();
+fetchUsers();
   </script>
 </body>
 </html>
