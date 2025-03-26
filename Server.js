@@ -51,7 +51,7 @@ const isAuthenticated = (req, res, next) => {
     return res.status(401).json({ error: "Unauthorized" }); // For APIs
   }
 
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     console.log('Decoded token:', decoded);
     if (err || !decoded.user) {
       res.clearCookie('token');
@@ -73,7 +73,7 @@ const isAdmin = (req, res, next) => {
     });
   }
 
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     console.log('Admin middleware - decoded:', decoded);
     if (err || !decoded.admin) {
       res.clearCookie('token');
@@ -177,7 +177,7 @@ app.post('/login', async (req, res) => {
     }
 
     // Generate JWT token with user ID
-    const token = jwt.sign({ user: { id: user[0].id } }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ user: { id: user[0].id } }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     // Set token in HTTP-only cookie
     res.cookie('token', token, { 
@@ -314,7 +314,7 @@ app.get('/user',isAuthenticated, async (req, res) => {
     }
 
     // Verify the token and decode the payload
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log('Decoded token:', decoded); // Debugging
 
     // Extract the user ID from the decoded payload
@@ -350,7 +350,7 @@ app.post('/book-slot',isAuthenticated, async (req, res) => {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.user.id;
 
     // Check if the slot is already booked
@@ -529,7 +529,7 @@ app.get(['/dashboard*', '/admin-dashboard*'], (req, res, next) => {
   
   // Verify token for regular users
   if (req.path.startsWith('/dashboard')) {
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err || !decoded.user) {
         res.clearCookie('token');
         return res.redirect('/');
@@ -540,7 +540,7 @@ app.get(['/dashboard*', '/admin-dashboard*'], (req, res, next) => {
   
   // Verify token for admin dashboard
   if (req.path.startsWith('/admin-dashboard')) {
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err || !decoded.admin) {
         res.clearCookie('token');
         return res.redirect('/admin-login.html');
@@ -571,7 +571,7 @@ app.get('/auth-check', (req, res) => {
     });
   }
 
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       res.clearCookie('token');
       return res.status(401).json({ 
