@@ -397,7 +397,7 @@ app.post('/check-availability', isAuthenticated, async (req, res) => {
 });
 
 // Endpoint to fetch booked slots
-app.get('/get-booked-slots', isAuthenticated, (req, res) => {
+app.get('/get-booked-slots', isAdmin, (req, res) => {
   const query = `
     SELECT 
       id, 
@@ -416,7 +416,7 @@ app.get('/get-booked-slots', isAuthenticated, (req, res) => {
 });
 
 // Delete slot endpoint
-app.delete('/delete-slot/:id', isAuthenticated, async (req, res) => {
+app.delete('/delete-slot/:id', isAdmin, async (req, res) => {
   const slotId = req.params.id;
   
   try {
