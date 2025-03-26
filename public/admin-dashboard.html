@@ -322,8 +322,6 @@
     // Fetch and Display Booked Slots
   async function fetchBookedSlots() {
       const response = await fetch('/get-booked-slots');
-      credentials: 'include'
-      if (!response.ok) throw new Error('Failed to fetch slots');
       const data = await response.json();
     const tableBody = document.querySelector('#bookedSlotsTable tbody');
     tableBody.innerHTML = '';
@@ -367,8 +365,6 @@ async function deleteSlot(slotId) {
 
   async function fetchUsers() {
       const response = await fetch('/get-users');
-      credentials: 'include'
-      if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
     const tableBody = document.querySelector('#registeredUsersTable tbody');
     tableBody.innerHTML = '';
