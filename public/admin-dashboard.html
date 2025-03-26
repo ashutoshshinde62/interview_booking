@@ -150,15 +150,17 @@
   background: #ff5252;
 }
     .refresh-button {
-    padding: 0.75rem 2rem;
-    background: #6a11cb;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    font-size: 1rem;
-    margin: 0.5rem;
+    position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 0.5rem 1rem;
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
   }
 
   .refresh-button:hover {
@@ -168,7 +170,7 @@
 </head>
 <body>
   <div class="dashboard-container">
-    <button class="refresh-button" onclick="refreshData()">Refresh All Data</button>
+    <button class="refresh-button" onclick="refreshData()">Fetch All Data</button>
     <!-- Logout Button -->
     <button class="logout-button" onclick="logout()">Logout</button>
 
