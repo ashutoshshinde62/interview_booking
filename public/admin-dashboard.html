@@ -321,16 +321,11 @@
 
     // Fetch and Display Booked Slots
   async function fetchBookedSlots() {
-    try {
       const response = await fetch('/get-booked-slots');
       credentials: 'include'
       if (!response.ok) throw new Error('Failed to fetch slots');
       const data = await response.json();
       populateSlotsTable(data);
-    } catch (err) {
-      console.error('Fetch slots error:', err);
-      alert('Error fetching booked slots');
-    }
   }
     function populateSlotsTable(data) {
     const tableBody = document.querySelector('#bookedSlotsTable tbody');
@@ -374,16 +369,11 @@ async function deleteSlot(slotId) {
 
 
   async function fetchUsers() {
-    try {
       const response = await fetch('/get-users');
       credentials: 'include'
       if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
       populateUsersTable(data);
-    } catch (err) {
-      console.error('Fetch users error:', err);
-      alert('Error fetching users');
-    }
   }
     function populateUsersTable(data) {
     const tableBody = document.querySelector('#registeredUsersTable tbody');
@@ -427,16 +417,11 @@ async function deleteUser(userId) {
 
 // Fetch and display admin-registered users
 async function fetchAdminUsers() {
-    try {
       const response = await fetch('/get-admin-users');
       credentials: 'include'
       if (!response.ok) throw new Error('Failed to fetch admin users');
       const data = await response.json();
       populateAdminUsersTable(data);
-    } catch (err) {
-      console.error('Fetch admin users error:', err);
-      alert('Error fetching admin users');
-    }
   }
     function populateAdminUsersTable(data) {
     const tableBody = document.querySelector('#adminUsersTable tbody');
