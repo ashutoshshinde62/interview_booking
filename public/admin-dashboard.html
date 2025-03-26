@@ -191,7 +191,6 @@
 <table id="adminUsersTable">
   <thead>
     <tr>
-      //<th>ID</th>
       <th>Full Name</th>
       <th>Mobile</th>
       <th>Email</th>
@@ -209,7 +208,6 @@
     <table id="bookedSlotsTable">
       <thead>
         <tr>
-          //<th>ID</th>
           <th>Full Name</th>
           <th>Date</th>
           <th>Slot Time</th>
@@ -225,7 +223,6 @@
 <table id="registeredUsersTable">
   <thead>
     <tr>
-      //<th>ID</th>
       <th>Username</th>
       <th>Email</th>
       <th>Phone</th>
@@ -297,7 +294,6 @@
     data.forEach((slot) => {
       const row = document.createElement('tr');
       row.innerHTML = `
-        //<td>${slot.id}</td>
         <td>${slot.student_name}</td> <!-- Match database column name -->
         <td>${slot.formatted_date}</td>
         <td>${slot.time}</td>
@@ -342,7 +338,6 @@ async function deleteSlot(slotId) {
   data.forEach((user) => {
     const row = document.createElement('tr');
     row.innerHTML = `
-      //<td>${user.id}</td>
       <td>${user.username}</td>
       <td>${user.email}</td>
       <td>${user.phone}</td>
@@ -392,7 +387,6 @@ async function fetchAdminUsers() {
     data.forEach((user) => {
       const row = document.createElement('tr');
       row.innerHTML = `
-        //<td>${user.id}</td>
         <td>${user.full_name}</td>
         <td>${user.mobile_number}</td>
         <td>${user.email}</td>
