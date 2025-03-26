@@ -323,6 +323,7 @@
   async function fetchBookedSlots() {
     try {
       const response = await fetch('/get-booked-slots');
+      credentials: 'include'
       if (!response.ok) throw new Error('Failed to fetch slots');
       const data = await response.json();
       populateSlotsTable(data);
@@ -375,6 +376,7 @@ async function deleteSlot(slotId) {
   async function fetchUsers() {
     try {
       const response = await fetch('/get-users');
+      credentials: 'include'
       if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
       populateUsersTable(data);
@@ -427,6 +429,7 @@ async function deleteUser(userId) {
 async function fetchAdminUsers() {
     try {
       const response = await fetch('/get-admin-users');
+      credentials: 'include'
       if (!response.ok) throw new Error('Failed to fetch admin users');
       const data = await response.json();
       populateAdminUsersTable(data);
