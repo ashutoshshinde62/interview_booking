@@ -325,9 +325,6 @@
       credentials: 'include'
       if (!response.ok) throw new Error('Failed to fetch slots');
       const data = await response.json();
-      populateSlotsTable(data);
-  }
-    function populateSlotsTable(data) {
     const tableBody = document.querySelector('#bookedSlotsTable tbody');
     tableBody.innerHTML = '';
     data.forEach((slot) => {
@@ -373,9 +370,6 @@ async function deleteSlot(slotId) {
       credentials: 'include'
       if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
-      populateUsersTable(data);
-  }
-    function populateUsersTable(data) {
     const tableBody = document.querySelector('#registeredUsersTable tbody');
     tableBody.innerHTML = '';
     data.forEach((user) => {
@@ -421,9 +415,6 @@ async function fetchAdminUsers() {
       credentials: 'include'
       if (!response.ok) throw new Error('Failed to fetch admin users');
       const data = await response.json();
-      populateAdminUsersTable(data);
-  }
-    function populateAdminUsersTable(data) {
     const tableBody = document.querySelector('#adminUsersTable tbody');
     tableBody.innerHTML = '';
     data.forEach((user) => {
