@@ -63,8 +63,9 @@ const isAuthenticated = (req, res, next) => {
 };
 
 const isAdmin = (req, res, next) => {
-  console.log('Admin middleware - token:', token);
   const token = req.cookies.token;
+  console.log('Admin middleware - token:', token);
+  
   
   if (!token) {
     return res.status(401).json({ 
@@ -478,7 +479,11 @@ app.get('/get-admin-users', isAdmin, async (req, res) => {
     res.json(results);
   } catch (err) {
     console.error('Database error:', err);
-    res.status(500).json({ message: 'Database error', error: err.message });
+    res.status(500).json({ 
+      success: false,
+      message: 'Database error', 
+      error: err.message 
+    });
   }
 });
 
