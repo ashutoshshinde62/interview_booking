@@ -219,7 +219,7 @@
 </head>
 <body>
   <div class="dashboard-container">
-     <button class="refresh-button" onclick="refreshData()">Fetch All Data</button>
+     
     <!-- Logout Button -->
     <button class="logout-button" onclick="logout()">Logout</button>
 
@@ -273,6 +273,7 @@
 
     <!-- User's Booked Slots -->
   <h2>Your Booked Slots</h2>
+    <button class="refresh-button" onclick="refreshData()">Refresh</button>
   <table id="userSlotsTable">
     <thead>
       <tr>
@@ -436,6 +437,8 @@ async function deleteUserSlot(slotId) {
       <div class="message error">${data.message}</div>
     `;
   }
+      fetchUserSlots();
+      fetchBookedSlots();
 });
     // Handle Slot Availability Check
     document.getElementById('availabilityForm').addEventListener('submit', async (e) => {
@@ -471,10 +474,8 @@ async function deleteUserSlot(slotId) {
 });
 
     function refreshData() {
-    fetchAdminUsers();
+    fetchUserSlots();
     fetchBookedSlots();
-    fetchUsers();
-    showRefreshFeedback();
   }
 
     // Add feedback animation
@@ -515,6 +516,7 @@ async function deleteUserSlot(slotId) {
 
     document.addEventListener('DOMContentLoaded', () => {
   fetchUserSlots();
+      fetchBookedSlots();
 });
 
   </script>
