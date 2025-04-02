@@ -278,7 +278,6 @@
           <th>Full Name</th>
           <th>Date</th>
           <th>Slot Time</th>
-          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -364,6 +363,22 @@ async function deleteUserSlot(slotId) {
     alert('Error deleting slot');
   }
 }
+
+    async function fetchBookedSlots() {
+      const response = await fetch('/get-booked-slots');
+      const data = await response.json();
+    const tableBody = document.querySelector('#bookedSlotsTable tbody');
+    tableBody.innerHTML = '';
+    data.forEach((slot) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${slot.student_name}</td>
+        <td>${slot.formatted_date}</td>
+        <td>${slot.time}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
 
     // Mock data for booked slots (replace with backend API calls)
     const bookedSlots = {
