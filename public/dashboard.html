@@ -469,6 +469,22 @@ async function deleteUserSlot(slotId) {
   }
 });
 
+    function refreshData() {
+    fetchAdminUsers();
+    fetchBookedSlots();
+    fetchUsers();
+    showRefreshFeedback();
+  }
+
+    // Add feedback animation
+  function showRefreshFeedback() {
+    const btn = document.querySelector('.refresh-button');
+    btn.style.background = '#4CAF50';
+    setTimeout(() => {
+      btn.style.background = '#6a11cb';
+    }, 500);
+  }
+
     // Logout Functionality
     function logout() {
       fetch('/logout', {
