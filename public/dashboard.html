@@ -434,8 +434,7 @@ fetchBookedSlots();
     document.getElementById('bookingMessage').innerHTML = `
       <div class="message success">${data.message}</div>
     `;
-    fetchUserSlots();
-      fetchBookedSlots();
+    
   } else {
     document.getElementById('bookingMessage').innerHTML = `
       <div class="message error">${data.message}</div>
