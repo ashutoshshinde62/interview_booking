@@ -360,7 +360,7 @@ async function fetchUserSlots() {
     console.error('Error fetching slots:', err);
   }
 }
-fetchUserSlots();
+
 async function deleteUserSlot(slotId) {
   if (!confirm('Are you sure you want to delete this slot?')) return;
 
@@ -398,7 +398,7 @@ async function deleteUserSlot(slotId) {
       tableBody.appendChild(row);
     });
   }
-fetchBookedSlots();
+
 
     
     // Mock data for booked slots (replace with backend API calls)
