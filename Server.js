@@ -589,6 +589,61 @@ app.get('/auth-check', (req, res) => {
   });
 });
 
+app.get('/user-slots', isAuthenticated, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const [slots] = await db.promise().query(
+      `SELECT
+        id,
+        student_name,
+        DATE_FORMAT(date, '%d-%m-%Y') AS formatted_date,
+        time
+      FROM slots 
+      WHERE user_id = ? 
+      ORDER BY date DESC, time DESC`,
+      [userId]
+    );
+    
+    res.json(slots);
+  } catch (err) {
+    console.error('Error fetching user slots:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.delete('/delete-user-slot/:id', isAuthenticated, async (req, res) => {
+  const slotId = req.params.id;
+
+  try {
+    // First check if the slot belongs to the user
+    const [slot] = await db.promise().query(
+      'SELECT * FROM slots WHERE id = ?',
+      [slotId]
+    );
+
+    if (slot.length === 0) {
+      return res.status(403).json({ 
+        message: 'You can only delete your own slots' 
+      });
+    }
+
+    const [result] = await db.promise().query(
+      'DELETE FROM slots WHERE id = ?',
+      [slotId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Slot not found' });
+    }
+
+    res.json({ message: 'Slot deleted successfully' });
+  } catch (err) {
+    console.error('Delete slot error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 // Logout route
 app.get('/logout', (req, res) => {
   res.clearCookie('token');
