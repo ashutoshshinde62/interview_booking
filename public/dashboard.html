@@ -219,7 +219,7 @@
 </head>
 <body>
   <div class="dashboard-container">
-     
+     <button class="refresh-button" onclick="refreshData()">Refresh</button>
     <!-- Logout Button -->
     <button class="logout-button" onclick="logout()">Logout</button>
 
@@ -273,7 +273,6 @@
 
     <!-- User's Booked Slots -->
   <h2>Your Booked Slots</h2>
-    <button class="refresh-button" onclick="refreshData()">Refresh</button>
   <table id="userSlotsTable">
     <thead>
       <tr>
@@ -340,8 +339,8 @@ async function fetchUserSlots() {
     if (!response.ok) throw new Error('Failed to fetch slots');
     
     const data = await response.json();
-    const tableBody = document.querySelector('#userSlotsTable tbody');
-    tableBody.innerHTML = '';
+    const userTableBody = document.querySelector('#userSlotsTable tbody');
+    userTableBody.innerHTML = '';
 
     data.forEach(slot => {
       const row = document.createElement('tr');
@@ -354,7 +353,7 @@ async function fetchUserSlots() {
         <button class="delete-btn" onclick="deleteUserSlot(${slot.id})">Delete</button>
       </td>
       `;
-      tableBody.appendChild(row);
+      userTableBody.insertAdjacentHTML('beforeend', row);
     });
   } catch (err) {
     console.error('Error fetching slots:', err);
@@ -384,10 +383,14 @@ async function deleteUserSlot(slotId) {
 }
 
     async function fetchBookedSlots() {
-  const response = await fetch('/get-all-booked-slots'); // Use the new endpoint
+      try {
+  const response = await fetch('/get-all-booked-slots', {
+    method: 'GET',
+    credentials: 'include'
+  }); // Use the new endpoint
   const data = await response.json();
-  const tableBody = document.querySelector('#bookedSlotsTable-user tbody');
-  tableBody.innerHTML = '';
+  const publicTableBody = document.querySelector('#bookedSlotsTable-user tbody');
+  publicTableBody.innerHTML = '';
   data.forEach((slot) => {
     const row = document.createElement('tr');
     row.innerHTML = `
@@ -395,8 +398,11 @@ async function deleteUserSlot(slotId) {
       <td>${slot.formatted_date}</td>
       <td>${slot.time}</td>
     `;
-    tableBody.appendChild(row);
+    publicTableBody.insertAdjacentHTML('beforeend', row);
   });
+} catch (err) {
+    console.error('Error fetching all slots:', err);
+  }
 }
 
     
@@ -433,7 +439,7 @@ async function deleteUserSlot(slotId) {
     document.getElementById('bookingMessage').innerHTML = `
       <div class="message success">${data.message}</div>
     `;
-    //fetchUserSlots();
+    fetchUserSlots();
     fetchBookedSlots();
   } else {
     document.getElementById('bookingMessage').innerHTML = `
