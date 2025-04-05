@@ -353,7 +353,7 @@ async function fetchUserSlots() {
         <button class="delete-btn" onclick="deleteUserSlot(${slot.id})">Delete</button>
       </td>
       `;
-      userTableBody.insertAdjacentHTML('beforeend', row);
+      userTableBody.appendChild(row);
     });
   } catch (err) {
     console.error('Error fetching slots:', err);
@@ -398,7 +398,7 @@ async function deleteUserSlot(slotId) {
       <td>${slot.formatted_date}</td>
       <td>${slot.time}</td>
     `;
-    publicTableBody.insertAdjacentHTML('beforeend', row);
+    publicTableBody.appendChild(row);
   });
 } catch (err) {
     console.error('Error fetching all slots:', err);
