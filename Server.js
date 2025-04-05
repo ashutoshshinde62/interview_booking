@@ -643,6 +643,22 @@ app.delete('/delete-user-slot/:id', isAuthenticated, async (req, res) => {
   }
 });
 
+app.get('/get-all-booked-slots', isAuthenticated, (req, res) => {
+  const query = `
+    SELECT 
+      student_name, 
+      DATE_FORMAT(date, '%d-%m-%Y') AS formatted_date, 
+      time 
+    FROM slots
+  `;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching slots:', err);
+      return res.status(500).json({ message: 'Error fetching slots' });
+    }
+    res.json(results);
+  });
+});
 
 // Logout route
 app.get('/logout', (req, res) => {
