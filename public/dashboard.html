@@ -384,21 +384,20 @@ async function deleteUserSlot(slotId) {
 }
 
     async function fetchBookedSlots() {
-      const response = await fetch('/get-booked-slots');
-      const data = await response.json();
-    const tableBody = document.querySelector('#bookedSlotsTable-user tbody');
-    tableBody.innerHTML = '';
-    data.forEach((slot) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${slot.student_name}</td>
-        <td>${slot.formatted_date}</td>
-        <td>${slot.time}</td>
-      `;
-      tableBody.appendChild(row);
-    });
-  }
-
+  const response = await fetch('/get-all-booked-slots'); // Use the new endpoint
+  const data = await response.json();
+  const tableBody = document.querySelector('#bookedSlotsTable-user tbody');
+  tableBody.innerHTML = '';
+  data.forEach((slot) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${slot.student_name}</td>
+      <td>${slot.formatted_date}</td>
+      <td>${slot.time}</td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
 
     
     // Mock data for booked slots (replace with backend API calls)
@@ -475,19 +474,24 @@ async function deleteUserSlot(slotId) {
   }
 });
 
-    function refreshData() {
-    fetchUserSlots();
-    fetchBookedSlots();
+    async function refreshData() {
+  try {
+    await fetchUserSlots();
+    await fetchBookedSlots();
+    showRefreshFeedback(); // Add visual feedback
+  } catch (err) {
+    console.error('Refresh error:', err);
   }
+}
 
-    // Add feedback animation
-  function showRefreshFeedback() {
-    const btn = document.querySelector('.refresh-button');
-    btn.style.background = '#4CAF50';
-    setTimeout(() => {
-      btn.style.background = '#6a11cb';
-    }, 500);
-  }
+// Add the feedback function if missing
+function showRefreshFeedback() {
+  const btn = document.querySelector('.refresh-button');
+  btn.style.background = '#4CAF50';
+  setTimeout(() => {
+    btn.style.background = '#6a11cb';
+  }, 500);
+}
 
     // Logout Functionality
     function logout() {
